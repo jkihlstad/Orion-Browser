@@ -1,0 +1,9 @@
+{
+  "node": {
+    "externalPackages": [
+      "@langchain/core",
+      "@langchain/openai",
+      "langchain"
+    ]
+  }
+}
