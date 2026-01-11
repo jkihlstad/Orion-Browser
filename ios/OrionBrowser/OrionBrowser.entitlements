@@ -2,10 +2,105 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- Push Notifications -->
+	<key>aps-environment</key>
+	<string>development</string>
+
+	<!-- App Groups -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.orion.shared</string>
+		<string>group.com.orion.browser</string>
+	</array>
+
+	<!-- Associated Domains -->
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:orion.browser</string>
-		<string>webcredentials:orion.browser</string>
+		<string>applinks:orionsuite.app</string>
+		<string>webcredentials:orionsuite.app</string>
+		<string>applinks:*.orionsuite.app</string>
 	</array>
+
+	<!-- Sign in with Apple -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+
+	<!-- AutoFill Credential Provider -->
+	<key>com.apple.developer.authentication-services.autofill-credential-provider</key>
+	<true/>
+
+	<!-- Keychain Sharing -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.orion.shared</string>
+	</array>
+
+	<!-- iCloud Services -->
+	<key>com.apple.developer.icloud-services</key>
+	<array>
+		<string>CloudKit</string>
+	</array>
+	<key>com.apple.developer.icloud-container-identifiers</key>
+	<array>
+		<string>iCloud.com.orion.browser</string>
+	</array>
+
+	<!-- Siri -->
+	<key>com.apple.developer.siri</key>
+	<true/>
+
+	<!-- Time Sensitive Notifications -->
+	<key>com.apple.developer.usernotifications.time-sensitive</key>
+	<true/>
+
+	<!-- Network Extensions -->
+	<key>com.apple.developer.networking.networkextension</key>
+	<array>
+		<string>content-filter-provider</string>
+		<string>dns-proxy</string>
+	</array>
+
+	<!-- NFC Tag Reading -->
+	<key>com.apple.developer.nfc.readersession.formats</key>
+	<array>
+		<string>NDEF</string>
+		<string>TAG</string>
+	</array>
+
+	<!-- App Attest -->
+	<key>com.apple.developer.devicecheck.appattest-environment</key>
+	<string>development</string>
+
+	<!-- Data Protection -->
+	<key>com.apple.developer.default-data-protection</key>
+	<string>NSFileProtectionComplete</string>
+
+	<!-- Fonts -->
+	<key>com.apple.developer.user-fonts</key>
+	<array>
+		<string>system-installation</string>
+	</array>
+
+	<!-- Access WiFi Info -->
+	<key>com.apple.developer.networking.wifi-info</key>
+	<true/>
+
+	<!-- Hotspot Configuration -->
+	<key>com.apple.developer.networking.hotspotconfiguration</key>
+	<true/>
+
+	<!-- Maps -->
+	<key>com.apple.developer.maps</key>
+	<true/>
+
+	<!-- Increased Memory Limit -->
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
+
+	<!-- Extended Virtual Addressing -->
+	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+	<true/>
 </dict>
 </plist>

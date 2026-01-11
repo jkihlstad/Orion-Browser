@@ -20,6 +20,12 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+
+	<!-- App Transport Security - Allow arbitrary loads for browser -->
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -27,25 +33,67 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
+
+	<!-- Privacy Usage Descriptions -->
 	<key>NSCameraUsageDescription</key>
-	<string>Orion uses the camera for QR code scanning and video recording.</string>
+	<string>Orion Browser uses the camera for QR code scanning, video recording, and augmented reality web experiences.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Orion uses Face ID to securely authenticate and protect your data.</string>
+	<string>Orion Browser uses Face ID to securely authenticate and protect your passwords and sensitive data.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Orion uses your location to provide location-aware browsing suggestions.</string>
+	<string>Orion Browser uses your location to provide location-aware browsing suggestions and website functionality.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Orion Browser uses your location for geofenced bookmarks and location-based browsing features.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Orion uses the microphone for voice commands and audio capture.</string>
+	<string>Orion Browser uses the microphone for voice commands, voice search, and audio capture on websites.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Orion needs permission to save images to your photo library.</string>
+	<string>Orion Browser needs permission to save images, screenshots, and downloads to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Orion needs access to your photo library to save screenshots and images.</string>
+	<string>Orion Browser needs access to your photo library to upload images to websites.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Orion uses speech recognition for voice commands.</string>
+	<string>Orion Browser uses speech recognition for voice commands and voice search.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Orion Browser uses Siri for voice-controlled browsing and search commands.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Orion Browser uses Bluetooth to connect to web-based IoT devices and accessories.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Orion Browser uses Bluetooth for Web Bluetooth API support on websites.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Orion Browser accesses your local network to discover and connect to local web services.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Orion Browser can add events from web pages to your calendar.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Orion Browser can autofill contact information on web forms.</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>Orion Browser uses NFC to read tags and interact with NFC-enabled content.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Orion Browser uses motion data for immersive web experiences and gesture controls.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Orion Browser may request permission to track your activity across apps and websites for personalized AI suggestions.</string>
+
+	<!-- Background Modes -->
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
 		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
 	</array>
+
+	<!-- Background Task Identifiers -->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.orion.browser.sync</string>
+		<string>com.orion.browser.refresh</string>
+		<string>com.orion.browser.download</string>
+	</array>
+
+	<!-- Required Device Capabilities -->
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+
+	<!-- UI Configuration -->
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UISupportedInterfaceOrientations</key>
@@ -53,6 +101,57 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Automatic</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+	</dict>
+
+	<!-- URL Schemes -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.orion.browser</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>orion</string>
+				<string>orion-browser</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- Document Types -->
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Web Archive</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.apple.webarchive</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- Queried URL Schemes -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>mailto</string>
+		<string>tel</string>
+		<string>sms</string>
+		<string>facetime</string>
+		<string>maps</string>
 	</array>
 </dict>
 </plist>

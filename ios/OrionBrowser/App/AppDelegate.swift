@@ -7,12 +7,19 @@
  * - MediaRecorder: Audio/video/screenshot capture
  * - BackgroundUploader: Reliable background uploads
  * - IngestionOrchestrator: Coordination layer
+ * - PushNotificationManager: Unified push notification handling
  */
 
 import UIKit
 import BackgroundTasks
+import SharedKit
+import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+
+    // MARK: - Push Notification Manager
+    private let pushManager = PushNotificationManager.shared
+
     // MARK: - App Lifecycle
     func application(
         _ application: UIApplication,
@@ -27,7 +34,39 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Initialize network reachability observer
         _ = NetworkReachabilityObserver()
 
+        // Set up push notification handling
+        setupPushNotifications()
+
         return true
+    }
+
+    // MARK: - Push Notification Setup
+    private func setupPushNotifications() {
+        // Set up PushNotificationManager as the delegate
+        pushManager.applicationDidFinishLaunching()
+
+        // Register notification handler for this app
+        pushManager.registerHandler(BrowserNotificationHandler(), for: Bundle.main.bundleIdentifier ?? "")
+
+        // Configure backend URL and JWT provider
+        if let backendURL = URL(string: Configuration.backendBaseURL) {
+            pushManager.configure(backendURL: backendURL) {
+                // Get JWT from Clerk session
+                try await ClerkTokenProvider.shared.getToken()
+            }
+        }
+
+        // Request authorization and register for remote notifications
+        Task {
+            do {
+                let authorized = try await pushManager.setup(with: [.alert, .sound, .badge])
+                if authorized {
+                    print("[AppDelegate] Push notifications authorized and registered")
+                }
+            } catch {
+                print("[AppDelegate] Failed to set up push notifications: \(error)")
+            }
+        }
     }
 
     // MARK: - Background Tasks Registration
@@ -182,6 +221,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
+        // Forward to PushNotificationManager
+        Task {
+            await pushManager.didRegisterForRemoteNotifications(withDeviceToken: deviceToken)
+        }
+
+        // Also register with legacy ConvexManager for backward compatibility
         let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         Task {
             await ConvexManager.shared.registerPushToken(token)
@@ -192,12 +237,90 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
+        // Forward to PushNotificationManager
+        pushManager.didFailToRegisterForRemoteNotifications(withError: error)
         print("Failed to register for remote notifications: \(error)")
+    }
+
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        // Forward to PushNotificationManager
+        pushManager.processRemoteNotification(userInfo, completionHandler: completionHandler)
+    }
+}
+
+// MARK: - Browser Notification Handler
+
+/// Handles push notifications specific to the browser app
+final class BrowserNotificationHandler: PushNotificationHandler, @unchecked Sendable {
+
+    func handleNotification(payload: [AnyHashable: Any]) async {
+        // Handle incoming notification while app is in foreground
+        print("[BrowserNotificationHandler] Received notification: \(payload)")
+
+        // Check notification type and handle accordingly
+        if let type = payload["type"] as? String {
+            switch type {
+            case "sync":
+                // Trigger background sync
+                await ConvexManager.shared.initialize()
+            case "ai_result":
+                // Post notification for AI results ready
+                await MainActor.run {
+                    NotificationCenter.default.post(
+                        name: .aiResultsReady,
+                        object: nil,
+                        userInfo: payload
+                    )
+                }
+            default:
+                break
+            }
+        }
+    }
+
+    func handleNotificationTap(payload: [AnyHashable: Any], action: String?) async {
+        // Handle user tapping on notification
+        print("[BrowserNotificationHandler] Notification tapped with action: \(action ?? "default")")
+
+        await MainActor.run {
+            // Handle different actions
+            if let action = action {
+                switch action {
+                case OrionNotificationAction.view.rawValue:
+                    // Navigate to specific content
+                    if let urlString = payload["url"] as? String,
+                       let url = URL(string: urlString) {
+                        NotificationCenter.default.post(
+                            name: .openURLInBrowser,
+                            object: nil,
+                            userInfo: ["url": url]
+                        )
+                    }
+                default:
+                    break
+                }
+            } else {
+                // Default tap - open the relevant content
+                if let urlString = payload["url"] as? String,
+                   let url = URL(string: urlString) {
+                    NotificationCenter.default.post(
+                        name: .openURLInBrowser,
+                        object: nil,
+                        userInfo: ["url": url]
+                    )
+                }
+            }
+        }
     }
 }
 
 // MARK: - Notification Names
 extension Notification.Name {
     static let openURLInBrowser = Notification.Name("openURLInBrowser")
+    static let aiResultsReady = Notification.Name("aiResultsReady")
     static let performSearch = Notification.Name("performSearch")
 }
